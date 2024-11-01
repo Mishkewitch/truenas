@@ -1,4 +1,3 @@
-
 #!/bin/sh
 # Install Nextcloud
 
@@ -407,4 +406,4 @@ if [ $NO_CERT -eq 1 ]; then
 else
 	echo "Using your web browser, go to https://${HOST_NAME} to log in"
  	echo "--------------------"
-fi
+  fi
