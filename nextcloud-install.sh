@@ -201,7 +201,7 @@ elif [ $DNS_CERT -eq 1 ]; then
   	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/Caddyfile-dns
 else
   	echo "Fetching Caddyfile for Let's Encrypt cert"
-  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile
+  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile-standalone
 fi
 fetch -o /usr/local/etc/rc.d/caddy https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/caddy
 chmod +x /usr/local/etc/rc.d/caddy
