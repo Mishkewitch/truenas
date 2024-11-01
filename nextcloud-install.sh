@@ -19,11 +19,11 @@ DNS_PLUGIN=""
 DNS_TOKEN=""
 CERT_EMAIL="m.pismerov@yandex.ru"
 COUNTRY_CODE="RU"
-HOST_NAME="cloud.tonitrus.ru"
+HOST_NAME="tonitrus.ru"
 TIME_ZONE="Europe/Moscow"
 PHP_VERSION="83"
 MARIADB_VERSION="106"
-PG_VERSION="15"
+PG_VERSION="16"
 
 # Check for Root Privileges
 if ! [ $(id -u) = 0 ]; then
@@ -98,7 +98,58 @@ REINSTALL="true"
 fi
 
 # Package Installation
-pkg install -y nano sudo vim redis gnupg bash go git ffmpeg perl5 p5-Locale-gettext help2man texinfo m4 autoconf openssl php${PHP_VERSION} php${PHP_VERSION}-ctype php${PHP_VERSION}-curl php${PHP_VERSION}-dom php${PHP_VERSION}-filter php${PHP_VERSION}-gd php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring php${PHP_VERSION}-posix php${PHP_VERSION}-session php${PHP_VERSION}-simplexml php${PHP_VERSION}-xmlreader php${PHP_VERSION}-xmlwriter php${PHP_VERSION}-zip php${PHP_VERSION}-zlib php${PHP_VERSION}-fileinfo php${PHP_VERSION}-bz2 php${PHP_VERSION}-intl php${PHP_VERSION}-ldap php${PHP_VERSION}-pecl-smbclient php${PHP_VERSION}-ftp php${PHP_VERSION}-imap php${PHP_VERSION}-bcmath php${PHP_VERSION}-gmp php${PHP_VERSION}-exif php${PHP_VERSION}-pecl-APCu php${PHP_VERSION}-pecl-memcache php${PHP_VERSION}-pecl-redis php${PHP_VERSION}-pecl-imagick php${PHP_VERSION}-pcntl php${PHP_VERSION}-phar php${PHP_VERSION}-iconv php${PHP_VERSION}-sodium php${PHP_VERSION}-sysvsem php${PHP_VERSION}-xsl php${PHP_VERSION}-opcache
+pkg install -y \
+autoconf \
+bash \
+ffmpeg \
+git-lite \
+gnupg \
+go \
+help2man \
+m4 \
+openssl \
+p5-Locale-gettext \
+perl5 \
+php${PHP_VERSION} \
+php${PHP_VERSION}-bcmath \
+php${PHP_VERSION}-bz2 \
+php${PHP_VERSION}-ctype \
+php${PHP_VERSION}-curl \
+php${PHP_VERSION}-dom \
+php${PHP_VERSION}-exif \
+php${PHP_VERSION}-fileinfo \
+php${PHP_VERSION}-filter \
+php${PHP_VERSION}-ftp \
+php${PHP_VERSION}-gd \
+php${PHP_VERSION}-gmp \
+php${PHP_VERSION}-iconv \
+php${PHP_VERSION}-imap \
+php${PHP_VERSION}-intl \
+php${PHP_VERSION}-ldap \
+php${PHP_VERSION}-mbstring \
+php${PHP_VERSION}-opcache \
+php${PHP_VERSION}-pcntl \
+php${PHP_VERSION}-pecl-APCu \
+php${PHP_VERSION}-pecl-imagick \
+php${PHP_VERSION}-pecl-memcache \
+php${PHP_VERSION}-pecl-redis \
+php${PHP_VERSION}-pecl-smbclient \
+php${PHP_VERSION}-phar \
+php${PHP_VERSION}-posix \
+php${PHP_VERSION}-session \
+php${PHP_VERSION}-simplexml \
+php${PHP_VERSION}-sodium \
+php${PHP_VERSION}-sysvsem \
+php${PHP_VERSION}-xml \
+php${PHP_VERSION}-xmlreader \
+php${PHP_VERSION}-xmlwriter \
+php${PHP_VERSION}-xsl \
+php${PHP_VERSION}-zip \
+php${PHP_VERSION}-zlib \
+redis \
+sudo \
+texinfo \
+vim
 
 # Create Directories
 if [ "${DB_TYPE}" = "MariaDB" ]; then
@@ -137,23 +188,23 @@ if [ $SELFSIGNED_CERT -eq 1 ]; then
   	cp /tmp/fullchain.pem /usr/local/etc/pki/tls/certs/fullchain.pem
 fi
 if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
-	fetch -o /root/ https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/remove-staging.sh
+	fetch -o /root/ https://raw.githubusercontent.com/danb35/freenas-iocage-nextcloud/refs/heads/master/includes/remove-staging.sh
   	chmod +x /root/remove-staging.sh
 fi
 if [ $NO_CERT -eq 1 ]; then
 	echo "Fetching Caddyfile for no SSL"
-  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile-nossl
+  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/Caddyfile-nossl
 elif [ $SELFSIGNED_CERT -eq 1 ]; then
 	echo "Fetching Caddyfile for self-signed cert"
-  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile-selfsigned
+  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/Caddyfile-selfsigned
 elif [ $DNS_CERT -eq 1 ]; then
   	echo "Fetching Caddyfile for Let's Encrypt DNS cert"
-  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile-dns
+  	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/Caddyfile-dns
 else
   	echo "Fetching Caddyfile for Let's Encrypt cert"
   	fetch -o /usr/local/www/Caddyfile https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/Caddyfile
 fi
-fetch -o /usr/local/etc/rc.d/caddy https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/caddy
+fetch -o /usr/local/etc/rc.d/caddy https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/caddy
 chmod +x /usr/local/etc/rc.d/caddy
 sed -i '' "s/yourhostnamehere/${HOST_NAME}/" /usr/local/www/Caddyfile
 sed -i '' "s/dns_plugin/${DNS_PLUGIN}/" /usr/local/www/Caddyfile
@@ -182,18 +233,18 @@ tar xjf /tmp/"${FILE}" -C /usr/local/www/
 chown -R www:www /usr/local/www/nextcloud/
 
 # PHP Setup
-fetch -o /usr/local/etc/php.ini https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/php.ini
-fetch -o /usr/local/etc/php-fpm.d/ https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/www.conf
+fetch -o /usr/local/etc/php.ini https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/php.ini
+fetch -o /usr/local/etc/php-fpm.d/ https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/www.conf
 if [ "${DB_TYPE}" = "MariaDB" ]; then
-  fetch -o /usr/local/etc/mysql/conf.d/nextcloud.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/my-system.cnf
+  fetch -o /usr/local/etc/mysql/conf.d/nextcloud.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/my-system.cnf
 fi
 sed -i '' "s|mytimezone|${TIME_ZONE}|" /usr/local/etc/php.ini
 chown -R www:www /usr/local/etc/php.ini
 sysrc php_fpm_enable="YES"
-service php-fpm start
+service php_fpm start
 
 # Redis Setup
-fetch -o /usr/local/etc/redis.conf https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/redis.conf
+fetch -o /usr/local/etc/redis.conf https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/redis.conf
 pw usermod www -G redis
 sysrc redis_enable="YES"
 service redis start
@@ -211,11 +262,11 @@ if [ "${REINSTALL}" == "true" ]; then
  	echo "New passwords will be saved in the root directory."
 	if [ "${DB_TYPE}" = "MariaDB" ]; then
    		mysql -u root -e "SET PASSWORD FOR '${DB_USER}'@localhost = PASSWORD('${DB_PASSWORD}');"
-		fetch -o /root/.my.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/my.cnf
+		fetch -o /root/.my.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/my.cnf
 		sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 	elif [ "${DB_TYPE}" = "PostgreSQL" ]; then
  		psql -U postgres -c "ALTER USER ${DB_USER} WITH PASSWORD '${DB_PASSWORD}';"
- 		fetch -o /root/.pgpass https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/pgpass
+ 		fetch -o /root/.pgpass https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/pgpass
   		chmod 600 /root/.pgpass
    		sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.pgpass
     	fi
@@ -233,10 +284,10 @@ else
 	  	mysql -u root -e "DROP DATABASE IF EXISTS test;"
 	  	mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
 	  	mysqladmin --user=root password "${DB_ROOT_PASSWORD}" reload
-	  	fetch -o /root/.my.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/my.cnf
+	  	fetch -o /root/.my.cnf https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/my.cnf
 	  	sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 	elif [ "${DB_TYPE}" = "PostgreSQL" ]; then
-	  	fetch -o /root/.pgpass https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/pgpass
+	  	fetch -o /root/.pgpass https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/pgpass
 	  	chmod 600 /root/.pgpass
     	  	sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.pgpass
     		mkdir /var/db/postgres
@@ -257,14 +308,14 @@ else
 
 # Nextcloud Setup
 	if [ "${DB_TYPE}" = "MariaDB" ]; then
-		if ! su -m www -c "php /usr/local/www/nextcloud/occ maintenance:install --database=\"mysql\" --database-name=\"${DB_NAME}\" --database-user=\"${DB_USER}\" --database-pass=\"${DB_PASSWORD}\" --database-host=\"localhost:/var/run/mysql/mysql.sock\" --admin-user=\"admin\" --admin-pass=\"${ADMIN_PASSWORD}\" --data-dir=\"/mnt/files\""
+		if ! su -m www -c "php /usr/local/www/nextcloud/occ maintenance:install --database=\"mysql\" --database-name=\"${DB_NAME}\" --database-user=\"${DB_USER}\" --database-pass=\"${DB_PASSWORD}\" --database-host=\"127.0.0.1\" --admin-user=\"admin\" --admin-pass=\"${ADMIN_PASSWORD}\" --data-dir=\"/mnt/files\""
   			then
     			echo "Failed to install ${APP_NAME}, aborting"
     			exit 1
 		fi
 	su -m www -c "php /usr/local/www/nextcloud/occ config:system:set mysql.utf8mb4 --type boolean --value=\"true\""
 	elif [ "${DB_TYPE}" = "PostgreSQL" ]; then
-  		if ! su -m www -c "php /usr/local/www/nextcloud/occ maintenance:install --database=\"pgsql\" --database-name=\"${DB_NAME}\" --database-user=\"${DB_USER}\" --database-pass=\"${DB_PASSWORD}\" --database-host=\"localhost:/tmp/.s.PGSQL.5432\" --admin-user=\"admin\" --admin-pass=\"${ADMIN_PASSWORD}\" --data-dir=\"/mnt/files\""
+  		if ! su -m www -c "php /usr/local/www/nextcloud/occ maintenance:install --database=\"pgsql\" --database-name=\"${DB_NAME}\" --database-user=\"${DB_USER}\" --database-pass=\"${DB_PASSWORD}\" --database-host=\"127.0.0.1\" --admin-user=\"admin\" --admin-pass=\"${ADMIN_PASSWORD}\" --data-dir=\"/mnt/files\""
   			then
     			echo "Failed to install ${APP_NAME}, aborting"
     			exit 1
@@ -300,13 +351,13 @@ else
 	su -m www -c 'php /usr/local/www/nextcloud/occ background:cron'
 fi
 su -m www -c 'php -f /usr/local/www/nextcloud/cron.php'
-fetch -o /tmp/www-crontab https://raw.githubusercontent.com/tschettervictor/bsd-apps/main/nextcloud/includes/www-crontab
+fetch -o /tmp/www-crontab https://raw.githubusercontent.com/tschettervictor/bsd-apps/refs/heads/main/nextcloud/includes/www-crontab
 crontab -u www /tmp/www-crontab
 
 # Restart Services
 service mysql-server restart
 service redis restart
-service php-fpm restart
+service php_fpm restart
 service caddy restart
 
 # Save Passwords
